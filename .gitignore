@@ -1,4 +1,10 @@
+# Virtual environments (any name)
 .venv/
+venv/
+env/
+.env
+
+# Python caches and build artefacts
 __pycache__/
 *.pyc
 *.egg-info/

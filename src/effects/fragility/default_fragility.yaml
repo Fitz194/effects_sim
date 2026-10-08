@@ -1,37 +1,62 @@
-# ILLUSTRATIVE default fragility library.
+# Default fragility library: PARTLY ANCHORED, MOSTLY STILL PLACEHOLDER.
 #
-# Medians are approximate peak incident overpressures (kPa) placed against the qualitative damage
-# descriptions in Glasstone & Dolan (1977), "The Effects of Nuclear Weapons", ch. 5 (long-duration
-# blast). Betas are assumed. These are placeholders to make the pipeline run end to end.
-# Replace them with values from a published source before treating any output as quantitative,
-# and record the reference next to each class.
+# Each class carries a `basis` tag so nothing passes as referenced when it is not:
+#   anchored    - the collapse median is tied to published statements (see `reference`). The other
+#                 states of that class keep the placeholder shape, scaled with the collapse median.
+#                 Betas are still assumed.
+#   placeholder - illustrative values placed against the qualitative damage descriptions in
+#                 Glasstone & Dolan (1977), "The Effects of Nuclear Weapons", ch. 5. Replace with
+#                 values from a published source before treating any output as quantitative.
+#
+# Medians are peak incident overpressure in kPa (1 psi = 6.895 kPa), for long-duration blast.
 #
 # Damage states (increasing severity):
 #   light    - windows, doors, light partitions; repairable
 #   moderate - roof/wall panels damaged, structure intact
 #   severe   - major structural damage, uninhabitable
 #   collapse - total or partial collapse
+#
+# Primary tables (Glasstone & Dolan ch. 5 summary tables) have not yet been transcribed. The
+# references below are secondary summaries; see docs/DESIGN.md "Validation status".
 
 states: [light, moderate, severe, collapse]
 
 classes:
   wood_frame:
     description: Timber-frame residential
-    median_kpa: {light: 7, moderate: 17, severe: 28, collapse: 40}
+    basis: anchored
+    reference: >
+      Collapse median 5 psi (34.5 kPa). (1) US OTA (1979), "The Effects of Nuclear War", ch. 2:
+      weapons tests suggest a typical residence collapses at about 5 psi. (2) About 8 psi is
+      reported to destroy wooden and brick houses, from Japan damage surveys (relayed by Wikipedia,
+      "Effects of nuclear explosions", citing AFSWP Operation CASTLE report; primary not read).
+      Statement (2) read as the 95th percentile gives a median of about 4.9 psi at beta 0.3, but
+      that depends on the assumed beta (3.5 to 5.8 psi for beta 0.5 to 0.2). Lower states are
+      placeholders scaled by 34.5/40 from the earlier values.
+    median_kpa: {light: 6, moderate: 14.5, severe: 24, collapse: 34.5}
     beta:       {light: 0.4, moderate: 0.35, severe: 0.3, collapse: 0.3}
   masonry:
     description: Unreinforced brick/block, typical UK terraced and semi-detached housing
-    median_kpa: {light: 8, moderate: 20, severe: 35, collapse: 50}
+    basis: anchored
+    reference: >
+      Same anchors as wood_frame: the statements found do not separate brick from wood houses, so
+      the collapse median is the same (5 psi, 34.5 kPa). Lower states are placeholders scaled by
+      34.5/50 from the earlier values. UK construction (cavity brick, tiled roofs) is not
+      distinguished from the Japan-survey building stock; this is an open question.
+    median_kpa: {light: 5.5, moderate: 14, severe: 24, collapse: 34.5}
     beta:       {light: 0.4, moderate: 0.35, severe: 0.3, collapse: 0.3}
   reinforced_concrete:
     description: Multi-storey RC frame (offices, flats)
+    basis: placeholder
     median_kpa: {light: 10, moderate: 40, severe: 90, collapse: 150}
     beta:       {light: 0.45, moderate: 0.4, severe: 0.35, collapse: 0.35}
   steel_frame:
     description: Steel-frame commercial, clad
+    basis: placeholder
     median_kpa: {light: 10, moderate: 30, severe: 60, collapse: 110}
     beta:       {light: 0.45, moderate: 0.4, severe: 0.35, collapse: 0.35}
   light_industrial:
     description: Light steel portal frame, sheet cladding (warehouses, sheds)
+    basis: placeholder
     median_kpa: {light: 5, moderate: 12, severe: 22, collapse: 35}
     beta:       {light: 0.4, moderate: 0.35, severe: 0.3, collapse: 0.3}

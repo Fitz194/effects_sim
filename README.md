@@ -5,7 +5,9 @@ Source models feed vulnerability models, with Monte Carlo uncertainty on top, re
 3D. A 2D compressible solver comes in Build 3.
 
 **Status:** Build 1 (analytic engine) and Build 2 (3D rendering) complete. Read `docs/DESIGN.md`
-for the validation status and known limitations before trusting any number. Fragility and casualty defaults are placeholders.
+for the validation status and known limitations before trusting any number. Fragility defaults are
+mostly placeholders (only the residential collapse medians are anchored) and casualty defaults are
+placeholders.
 
 ![3D view](docs/images/surface_burst_population.png)
 
@@ -61,7 +63,8 @@ Real places: `pip install -e ".[geo]"`, download a WorldPop or GHSL population G
 ## Making it quantitative
 
 1. Replace `src/effects/fragility/default_fragility.yaml` (or point `environment.fragility_library`
-   at your own file) with referenced values.
+   at your own file) with referenced values. Each class has a `basis` tag (`anchored` or
+   `placeholder`) and a `reference` note; keep them honest.
 2. Blast validation already runs against Brode, the DNA free-air standard and a Glasstone
    height-of-burst point (`pytest -m validation`). You can add transcribed Glasstone figure
    values to `tests/validation/data/reference_points.csv`.
@@ -83,6 +86,10 @@ tests/
 scenarios/      YAML scenario files
 docs/           design notes
 ```
+
+## Licence
+
+MIT. See `LICENSE`.
 
 ## Credits
 

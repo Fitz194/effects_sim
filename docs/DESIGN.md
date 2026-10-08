@@ -31,7 +31,7 @@ environment (population grid, buildings) +
 | `sources/shock.py` | Rankine-Hugoniot shock speed and ground arrival time (for animation) | |
 | `sources/thermal.py` | Point-source thermal fluence with exponential transmittance | Glasstone & Dolan 1977 ch. 7 (simplified) |
 | `fragility/curves.py` | Lognormal damage-state curves per building class, loaded from YAML | HAZUS-style form |
-| `fragility/default_fragility.yaml` | 5 building classes x 4 damage states | **Illustrative placeholders** |
+| `fragility/default_fragility.yaml` | 5 building classes x 4 damage states, each tagged with a `basis` | Residential collapse medians **anchored** to published statements; everything else **illustrative placeholders** |
 | `fragility/human.py` | Indoor casualties via damage state, outdoor via direct blast + burns | **Illustrative placeholders** |
 | `data/environment.py` | Local metric grid centred on ground zero; per-cell building-class mix | |
 | `data/synthetic.py` | Monocentric exponential-density city + sampled buildings (offline) | Clark 1951 |
@@ -61,7 +61,8 @@ model-form factor on peak overpressure (`blast_model_sigma_ln`, default 0.1, fro
 | Brode optimum burst height for 5 psi, 15 kt vs ~2,530 ft from Glasstone HOB curves (cited by Wellerstein 2013) | Passing: 700 m / 2,300 ft, ~9% low (tolerance 15%) |
 | Brode tail continuity and positivity | Passing |
 | Blast ranges vs transcribed Glasstone figures | Optional: harness in `tests/validation/data/reference_points.csv` |
-| Fragility / casualty parameters vs published sources | **Not yet done**: defaults are placeholders |
+| Residential collapse median vs OTA (1979) and Glasstone & Dolan summaries: collapse at about 5 psi, nearly all destroyed by about 8 psi | Passing (`tests/validation/test_fragility_anchors.py`). Anchors come from secondary summaries, beta is assumed, so this is a consistency check, not a fit to data |
+| Other building classes, all betas, all casualty rates | **Not yet done**: placeholders (see the `basis` tag in the YAML) |
 
 Example (Brode): 15 kt gives 5 psi at 1.15 km for a surface burst and 1.62 km at 600 m burst height.
 
@@ -74,8 +75,9 @@ Example (Brode): 15 kt gives 5 psi at 1.15 km for a surface burst and 1.62 km at
 3. Thermal transmittance is a single exponential; no scattered-light buildup. Order-of-magnitude.
 4. Burn thresholds are yield-independent (in reality they rise with yield).
 5. Overpressure-only fragility: valid for long-duration loading. Short-duration loads need P-I curves.
-6. Fragility and casualty parameters are placeholders until replaced with referenced values.
+6. Only the residential (`wood_frame`, `masonry`) collapse medians are anchored. All other fragility parameters, all betas and all casualty rates are placeholders. The anchors are secondary summaries of Glasstone & Dolan; the primary tables (ch. 5 damage summaries, ch. 12 blast injury) still need transcribing into `tests/validation/data/reference_points.csv` with page numbers.
 7. Prompt radiation and fallout are not modelled.
+8. **Indoor casualties look too low.** With houses collapsing at about 5 psi, the default model gives about 13% indoor fatality at 5 psi and plateaus at 25% at any overpressure (the collapse fatality rate). OTA (1979) uses civil-defence assumptions of roughly 50% mean lethality at 5-6 psi, which it calls relatively conservative. The two are not reconciled, and the OTA statements are ambiguous about standing versus lying occupants, so the rates were left alone rather than tuned to one secondary number. HAZUS indoor casualty rates were considered and not adopted: they are earthquake rates, give far lower fatalities, and are not valid for blast. Needs primary casualty data (Glasstone & Dolan ch. 12 and civil-defence studies).
 
 ## Build 2: 3D rendering (implemented)
 

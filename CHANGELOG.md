@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- **Housekeeping:** added MIT `LICENSE`; `.gitignore` now also covers `venv/`, `env/` and `.env`;
+  stopped tracking `__pycache__`, `*.egg-info` and `outputs/` (all were already listed in `.gitignore`).
+- **Fragility:** residential classes (`wood_frame`, `masonry`) now have a collapse median of 5 psi
+  (34.5 kPa), anchored to published statements (see the YAML `reference` field). Their lower damage
+  states were scaled with it. Other classes are unchanged. Every class now carries a `basis` tag.
+  Expect more damage at 3-8 psi than in 0.2.0. Example renders in `docs/images/` predate this change.
+- **Validation:** `tests/validation/test_fragility_anchors.py` guards the residential anchors.
+- **Docs:** `docs/DESIGN.md` now records the indoor-casualty gap as a known limitation.
+
 ## 0.2.0 - Build 2
 
 - **Blast model:** new default `brode` (Brode 1986 height-of-burst fit, Mach-stem included) with a

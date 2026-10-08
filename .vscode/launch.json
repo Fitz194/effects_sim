@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run scenario (current file)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "effects.cli",
+            "args": ["run", "${file}"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Pytest: current file",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": ["${file}", "-x"],
+            "console": "integratedTerminal"
+        }
+    ]
+}
