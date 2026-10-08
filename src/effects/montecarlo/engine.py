@@ -145,7 +145,7 @@ def run(
         cell_sp = np.zeros(r_cells.shape + (ns,))
         for c, fs in enumerate(sets):
             cell_sp += mix[..., c : c + 1] * fs.state_probs(p, med_scale[c])
-        pf, pi = casualty.rates(cell_sp, p, q, fin)
+        pf, pi = casualty.rates(cell_sp, p, q, fin, yield_kt=y)
         pop = env.population * pscale
         fat, inj = pf * pop, pi * pop
 

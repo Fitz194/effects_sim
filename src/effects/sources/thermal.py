@@ -2,10 +2,16 @@
 
     Q(R) = f_th * Y * tau(R) / (4 pi R^2)
 
-f_th: thermal partition (~0.35 for air bursts, lower for surface bursts; Glasstone & Dolan ch. 7).
-tau:  atmospheric transmittance, here a single-parameter exponential exp(-R / L) with L set from
-      visibility. This is deliberately simple: real transmittance includes scattered-light buildup
-      and depends on wavelength and burst height. Treat thermal results as order-of-magnitude.
+f_th: thermal partition, 0.35 for air bursts (Glasstone & Dolan 1977, ch. 7; lower for surface
+      bursts).
+tau:  atmospheric transmittance, a single exponential exp(-R / L) with L = visibility / 2.
+      DERIVED: L = V/2 was fitted (RMS error 4 % in range, worst case 12 %) to 22 points read from
+      Fig. 7.42 (p. 291), slant range of 3-50 cal/cm^2 versus yield for 1.5 kt - 9 Mt, 12-mile
+      visibility, burst height 200 W^0.4 ft. The same fit with f_th free gives f_th = 0.33,
+      L = 11 km, consistent with 0.35. ASSUMED: L scales linearly with visibility (the book's
+      Sec. 7.93 ff. procedures are not implemented). The exponential absorbs scattered-light
+      buildup, so it is not a physical transmittance and is not valid far outside 0.2-20 miles or
+      for burst heights well above 200 W^0.4 ft.
 """
 
 from __future__ import annotations
@@ -24,7 +30,7 @@ class ThermalSource:
     burst_height_m: float = 0.0
     thermal_fraction: float = 0.35
     visibility_m: float = 20_000.0
-    attenuation_per_visibility: float = 1.0  # L = visibility / this
+    attenuation_per_visibility: float = 2.0  # L = visibility / this, fitted to Fig. 7.42
 
     def slant_range(self, ground_range_m):
         return np.hypot(np.asarray(ground_range_m, dtype=float), self.burst_height_m)

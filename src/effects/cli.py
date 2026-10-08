@@ -13,6 +13,7 @@ from pathlib import Path
 
 import numpy as np
 
+from effects.fragility import yield_warnings
 from effects.sources import BLAST_MODELS, ThermalSource, make_blast
 from effects.units import cal_cm2_to_j_m2, psi_to_pa
 
@@ -94,7 +95,9 @@ def cmd_run(a) -> None:
     s["atmosphere"] = sc.atmosphere.model_dump()
     s["blast_model"] = src.blast_model
     s["radii_nominal"] = radii(*nominal_sources(sc))
-    s["warnings"] = blast_warnings(src.blast_model, src.burst_height_m)
+    s["warnings"] = blast_warnings(src.blast_model, src.burst_height_m) + yield_warnings(
+        [lib[c] for c in env.class_names], src.yield_kt
+    )
     s["runtime_s"] = round(time.perf_counter() - t0, 2)
     (out / "summary.json").write_text(json.dumps(s, indent=2))
 

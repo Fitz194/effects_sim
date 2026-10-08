@@ -44,7 +44,7 @@ def test_casualty_rates_bounded(lib):
     p = np.logspace(2, 6, 100)
     q = np.logspace(2, 7, 100)
     sp = lib["masonry"].state_probs(p)
-    f, i = m.rates(sp, p, q, 0.85)
+    f, i = m.rates(sp, p, q, 0.85, yield_kt=15.0)
     assert np.all((f >= 0) & (f <= 1))
     assert np.all((i >= 0) & (f + i <= 1 + 1e-12))
 
@@ -52,6 +52,6 @@ def test_casualty_rates_bounded(lib):
 def test_no_effect_no_casualties(lib):
     m = CasualtyModel()
     sp = lib["masonry"].state_probs(np.array([1.0]))
-    f, i = m.rates(sp, np.array([1.0]), np.array([1.0]), 0.85)
+    f, i = m.rates(sp, np.array([1.0]), np.array([1.0]), 0.85, yield_kt=15.0)
     assert f[0] == pytest.approx(0.0, abs=1e-9)
     assert i[0] == pytest.approx(0.0, abs=1e-9)

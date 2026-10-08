@@ -1,62 +1,104 @@
-# Default fragility library: PARTLY ANCHORED, MOSTLY STILL PLACEHOLDER.
+# Default fragility library, derived from Glasstone & Dolan (1977), "The Effects of Nuclear Weapons"
+# (3rd ed., US DoD / ERDA), ch. 5. Page numbers below are the book's own printed pages.
 #
-# Each class carries a `basis` tag so nothing passes as referenced when it is not:
-#   anchored    - the collapse median is tied to published statements (see `reference`). The other
-#                 states of that class keep the placeholder shape, scaled with the collapse median.
-#                 Betas are still assumed.
-#   placeholder - illustrative values placed against the qualitative damage descriptions in
-#                 Glasstone & Dolan (1977), "The Effects of Nuclear Weapons", ch. 5. Replace with
-#                 values from a published source before treating any output as quantitative.
+# How the numbers were obtained (all steps are reproducible; see docs/DESIGN.md "Validation status"):
+#   1. Fig. 5.140 (p. 219) is a nomogram giving, for 21 structure types, the ground distance from
+#      zero for SEVERE and MODERATE damage versus yield at the optimum burst height. The point for
+#      each type was read from the printed figure (reading error about +/-4 px on a ~380 px
+#      scale, i.e. a few percent in distance), and the line through the yield scale was
+#      calibrated on the book's own worked example (p. 218: Type 5, 1 Mt -> 29,000 ft severe and
+#      33,000 ft moderate; we reproduce 29,600 and 32,600 ft).
+#   2. Each distance was converted to peak incident overpressure with this repository's Brode
+#      model, taking the burst height that maximises overpressure at that range (optimum HOB).
+#   3. Light damage is 1 psi for all structures except blast-resistant Type 1 (Sec. 5.143, p. 220).
+#   4. Glasstone's three levels (light / moderate / severe) are mapped onto the four states here:
+#         light    <- Glasstone "light"    (1 psi)
+#         moderate <- Glasstone "moderate"
+#         collapse <- Glasstone "severe"   (Types 3, 5: collapse of bearing walls / frame)
+#         severe   <- ASSUMED: geometric mean of Glasstone moderate and severe.
+#      Glasstone's moderate and severe levels are only about 10-30 % apart in overpressure, so the
+#      upper three states are close together. That is a property of the source, not a bug.
+#   5. The book's median is assumed to be the 50 % damage probability. The book states its accuracy
+#      as +/-20 % in distance (Sec. 5.142), which at a local slope d ln p / d ln r of about -1.7
+#      is roughly 0.3 in ln p. Hence beta = 0.3 for all states: ASSUMED, not tabulated anywhere.
 #
-# Medians are peak incident overpressure in kPa (1 psi = 6.895 kPa), for long-duration blast.
+# DRAG-SENSITIVE structures (Types 6-12, Table 5.139b, p. 215): damage depends on dynamic pressure
+# and so on yield, not on peak overpressure alone (Sec. 5.137-5.138). For these the medians are
+# valid ONLY NEAR THE REFERENCE YIELD (`reference_yield_kt`) and `drag_sensitive: true` is set. The
+# CLI warns when a scenario's yield differs from the reference by more than a factor of 3.
+# (At 1 Mt the same nomogram gives roughly 35-45 % lower overpressure for Types 6-12.)
+#
+# `basis` tags: derived = read from a cited figure/table with the steps above; placeholder = not
+# yet sourced. Diffraction types (Type 3, 5) are almost yield-independent in this reading (the
+# median over 15 kt-1 Mt is used; scatter about +/-10 %).
+#
+# Medians are peak incident overpressure in kPa (1 psi = 6.895 kPa).
 #
 # Damage states (increasing severity):
 #   light    - windows, doors, light partitions; repairable
 #   moderate - roof/wall panels damaged, structure intact
-#   severe   - major structural damage, uninhabitable
-#   collapse - total or partial collapse
-#
-# Primary tables (Glasstone & Dolan ch. 5 summary tables) have not yet been transcribed. The
-# references below are secondary summaries; see docs/DESIGN.md "Validation status".
+#   severe   - major structural damage, uninhabitable (interpolated, see 4.)
+#   collapse - total or partial collapse (Glasstone "severe")
 
 states: [light, moderate, severe, collapse]
 
 classes:
   wood_frame:
-    description: Timber-frame residential
-    basis: anchored
+    description: Timber-frame residential (Glasstone Type 5, one or two storeys)
+    basis: derived
     reference: >
-      Collapse median 5 psi (34.5 kPa). (1) US OTA (1979), "The Effects of Nuclear War", ch. 2:
-      weapons tests suggest a typical residence collapses at about 5 psi. (2) About 8 psi is
-      reported to destroy wooden and brick houses, from Japan damage surveys (relayed by Wikipedia,
-      "Effects of nuclear explosions", citing AFSWP Operation CASTLE report; primary not read).
-      Statement (2) read as the 95th percentile gives a median of about 4.9 psi at beta 0.3, but
-      that depends on the assumed beta (3.5 to 5.8 psi for beta 0.5 to 0.2). Lower states are
-      placeholders scaled by 34.5/40 from the earlier values.
-    median_kpa: {light: 6, moderate: 14.5, severe: 24, collapse: 34.5}
-    beta:       {light: 0.4, moderate: 0.35, severe: 0.3, collapse: 0.3}
+      Glasstone & Dolan (1977) Table 5.139a (p. 214) Type 5; Fig. 5.140 (p. 219); Sec. 5.143
+      (p. 220). Nomogram read at 15 kt, 100 kt and 1 Mt (3.8/3.6/3.3 psi severe;
+      2.9/2.9/2.8 psi moderate) and combined as the geometric mean: severe 3.55 psi, moderate
+      2.88 psi. Nagasaki / Nevada house-test text (Ch. 5) points to about 3 psi, consistent.
+    median_kpa: {light: 6.9, moderate: 19.9, severe: 22.0, collapse: 24.5}
+    beta:       {light: 0.3, moderate: 0.3, severe: 0.3, collapse: 0.3}
   masonry:
-    description: Unreinforced brick/block, typical UK terraced and semi-detached housing
-    basis: anchored
+    description: Unreinforced brick, low-rise wall-bearing (Glasstone Type 3 used as nearest class)
+    basis: derived
     reference: >
-      Same anchors as wood_frame: the statements found do not separate brick from wood houses, so
-      the collapse median is the same (5 psi, 34.5 kPa). Lower states are placeholders scaled by
-      34.5/50 from the earlier values. UK construction (cavity brick, tiled roofs) is not
-      distinguished from the Japan-survey building stock; this is an open question.
-    median_kpa: {light: 5.5, moderate: 14, severe: 24, collapse: 34.5}
-    beta:       {light: 0.4, moderate: 0.35, severe: 0.3, collapse: 0.3}
+      Glasstone & Dolan (1977) Table 5.139a (p. 214) Type 3 (multistory wall-bearing brick
+      apartment house up to three storeys); Fig. 5.140 (p. 219); Sec. 5.143. Read at 15 kt,
+      100 kt, 1 Mt: severe 5.3/5.1/4.9 psi; moderate 4.1/4.2/4.3 psi -> geometric means 5.08
+      and 4.19 psi. Type 3 is an apartment block, used here for UK brick housing for lack of a
+      closer table entry; the brick wall panel failure range in Table 5.145 (3-10 psi, p. 221)
+      brackets it. UK cavity-wall and tiled-roof construction is not distinguished.
+    median_kpa: {light: 6.9, moderate: 28.9, severe: 31.8, collapse: 35.1}
+    beta:       {light: 0.3, moderate: 0.3, severe: 0.3, collapse: 0.3}
   reinforced_concrete:
-    description: Multi-storey RC frame (offices, flats)
-    basis: placeholder
-    median_kpa: {light: 10, moderate: 40, severe: 90, collapse: 150}
-    beta:       {light: 0.45, moderate: 0.4, severe: 0.35, collapse: 0.35}
+    description: Multi-storey RC frame office/flats, non-earthquake-resistant (Glasstone Type 12)
+    basis: derived
+    drag_sensitive: true
+    reference_yield_kt: 15
+    reference: >
+      Glasstone & Dolan (1977) Table 5.139b (p. 216) Type 12 (3-10 storey RC frame, lightweight
+      low-strength walls, non-earthquake-resistant); Fig. 5.140 (p. 219). DRAG-SENSITIVE. Values
+      are the overpressure at the nomogram distance for 15 kt: severe 14.3 psi, moderate
+      10.4 psi. At 1 Mt: 9.3 / 7.9 psi. Type 11 (earthquake-resistant) is about 80 % stronger.
+      Walled RC (Type 2, Table 5.139a) is about 10 psi severe: a different, diffraction-type class.
+    median_kpa: {light: 6.9, moderate: 71.8, severe: 84.3, collapse: 98.9}
+    beta:       {light: 0.3, moderate: 0.3, severe: 0.3, collapse: 0.3}
   steel_frame:
-    description: Steel-frame commercial, clad
-    basis: placeholder
-    median_kpa: {light: 10, moderate: 30, severe: 60, collapse: 110}
-    beta:       {light: 0.45, moderate: 0.4, severe: 0.35, collapse: 0.35}
+    description: Multi-storey steel frame, clad, non-earthquake-resistant (Glasstone Type 10)
+    basis: derived
+    drag_sensitive: true
+    reference_yield_kt: 15
+    reference: >
+      Glasstone & Dolan (1977) Table 5.139b (p. 215) Type 10 (3-10 storey steel frame office-type,
+      lightweight low-strength walls, non-earthquake-resistant); Fig. 5.140 (p. 219). DRAG-
+      SENSITIVE. Overpressure at the nomogram distance for 15 kt: severe 23.8 psi, moderate
+      17.0 psi. At 1 Mt: 13.5 / 11.4 psi.
+    median_kpa: {light: 6.9, moderate: 117.1, severe: 138.6, collapse: 164.0}
+    beta:       {light: 0.3, moderate: 0.3, severe: 0.3, collapse: 0.3}
   light_industrial:
-    description: Light steel portal frame, sheet cladding (warehouses, sheds)
-    basis: placeholder
-    median_kpa: {light: 5, moderate: 12, severe: 22, collapse: 35}
-    beta:       {light: 0.4, moderate: 0.35, severe: 0.3, collapse: 0.3}
+    description: Light steel frame industrial, single storey (Glasstone Type 6, 5-ton crane)
+    basis: derived
+    drag_sensitive: true
+    reference_yield_kt: 15
+    reference: >
+      Glasstone & Dolan (1977) Table 5.139b (p. 215) Type 6 (light steel frame industrial
+      building, single storey, low strength walls which fail quickly); Fig. 5.140 (p. 219).
+      DRAG-SENSITIVE. Overpressure at the nomogram distance for 15 kt: severe 12.1 psi, moderate
+      8.6 psi. At 1 Mt: 6.6 / 5.6 psi.
+    median_kpa: {light: 6.9, moderate: 59.5, severe: 70.5, collapse: 83.6}
+    beta:       {light: 0.3, moderate: 0.3, severe: 0.3, collapse: 0.3}
