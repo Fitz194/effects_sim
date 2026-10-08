@@ -1,0 +1,37 @@
+# ILLUSTRATIVE default fragility library.
+#
+# Medians are approximate peak incident overpressures (kPa) placed against the qualitative damage
+# descriptions in Glasstone & Dolan (1977), "The Effects of Nuclear Weapons", ch. 5 (long-duration
+# blast). Betas are assumed. These are placeholders to make the pipeline run end to end.
+# Replace them with values from a published source before treating any output as quantitative,
+# and record the reference next to each class.
+#
+# Damage states (increasing severity):
+#   light    - windows, doors, light partitions; repairable
+#   moderate - roof/wall panels damaged, structure intact
+#   severe   - major structural damage, uninhabitable
+#   collapse - total or partial collapse
+
+states: [light, moderate, severe, collapse]
+
+classes:
+  wood_frame:
+    description: Timber-frame residential
+    median_kpa: {light: 7, moderate: 17, severe: 28, collapse: 40}
+    beta:       {light: 0.4, moderate: 0.35, severe: 0.3, collapse: 0.3}
+  masonry:
+    description: Unreinforced brick/block, typical UK terraced and semi-detached housing
+    median_kpa: {light: 8, moderate: 20, severe: 35, collapse: 50}
+    beta:       {light: 0.4, moderate: 0.35, severe: 0.3, collapse: 0.3}
+  reinforced_concrete:
+    description: Multi-storey RC frame (offices, flats)
+    median_kpa: {light: 10, moderate: 40, severe: 90, collapse: 150}
+    beta:       {light: 0.45, moderate: 0.4, severe: 0.35, collapse: 0.35}
+  steel_frame:
+    description: Steel-frame commercial, clad
+    median_kpa: {light: 10, moderate: 30, severe: 60, collapse: 110}
+    beta:       {light: 0.45, moderate: 0.4, severe: 0.35, collapse: 0.35}
+  light_industrial:
+    description: Light steel portal frame, sheet cladding (warehouses, sheds)
+    median_kpa: {light: 5, moderate: 12, severe: 22, collapse: 35}
+    beta:       {light: 0.4, moderate: 0.35, severe: 0.3, collapse: 0.3}

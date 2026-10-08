@@ -1,0 +1,18 @@
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Downloaded data and run outputs
+cache/*
+!cache/.gitkeep
+outputs/
+*.tif
+*.vtk
+*.vtu
+*.npz

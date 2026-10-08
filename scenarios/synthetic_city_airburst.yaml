@@ -1,0 +1,44 @@
+# Offline demo: synthetic monocentric city, no downloads needed.
+name: synthetic_city_airburst
+
+source:
+  type: nuclear
+  yield_kt: 15
+  burst_height_m: 600        # air burst; Brode fit handles Mach-stem enhancement
+  blast_fraction: 0.5
+  thermal_fraction: 0.35
+  reflection_factor: 1.8
+
+atmosphere:
+  p0_pa: 101325
+  visibility_m: 20000
+
+environment:
+  type: synthetic
+  half_width_m: 6000
+  cell_m: 50
+  synthetic:
+    total_population: 400000
+    scale_length_m: 2500
+    n_buildings: 25000
+    centre_offset_m: [800, -400]
+    seed: 1
+
+exposure:
+  indoor_fraction: 0.85
+
+montecarlo:
+  n_samples: 300
+  seed: 42
+  uncertainty:
+    yield_sigma_ln: 0.1
+    blast_fraction_range: [0.45, 0.55]
+    reflection_factor_range: [1.6, 2.0]
+    thermal_fraction_range: [0.30, 0.40]
+    visibility_range_m: [10000, 30000]
+    fragility_median_sigma_ln: 0.2
+    population_sigma_ln: 0.1
+    indoor_fraction_range: [0.75, 0.95]
+
+output:
+  dir: outputs/synthetic_city_airburst

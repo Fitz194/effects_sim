@@ -1,0 +1,28 @@
+# Real-data template. Needs: pip install -e ".[geo]"
+# 1. Download a population-count GeoTIFF covering your area (WorldPop "unconstrained 100 m"
+#    or GHSL GHS-POP) into cache/, and set population_raster below.
+# 2. Set lat/lon for ground zero. OSM buildings are fetched once and cached in cache/.
+# 3. Check OSM_CLASS_MAP in src/effects/data/geo.py suits the region's building stock.
+name: real_area
+
+source:
+  type: nuclear
+  yield_kt: 15
+  burst_height_m: 0
+
+environment:
+  type: real
+  half_width_m: 5000
+  cell_m: 100
+  real:
+    lat: 0.0          # set me
+    lon: 0.0          # set me
+    population_raster: cache/population.tif
+    osm_buildings: true
+
+montecarlo:
+  n_samples: 200
+  seed: 42
+
+output:
+  dir: outputs/real_area

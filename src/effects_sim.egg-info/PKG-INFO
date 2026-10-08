@@ -1,0 +1,95 @@
+Metadata-Version: 2.4
+Name: effects-sim
+Version: 0.1.0
+Summary: Hazard and consequence modelling: source models, fragility, Monte Carlo, 2D compressible solver, 3D rendering
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: numpy>=1.26
+Requires-Dist: scipy>=1.12
+Requires-Dist: matplotlib>=3.8
+Requires-Dist: pandas>=2.1
+Requires-Dist: pydantic>=2.5
+Requires-Dist: pyyaml>=6.0
+Provides-Extra: geo
+Requires-Dist: rasterio>=1.3; extra == "geo"
+Requires-Dist: geopandas>=0.14; extra == "geo"
+Requires-Dist: shapely>=2.0; extra == "geo"
+Requires-Dist: pyproj>=3.6; extra == "geo"
+Requires-Dist: osmnx>=1.9; extra == "geo"
+Provides-Extra: solver
+Requires-Dist: numba>=0.59; extra == "solver"
+Provides-Extra: viz
+Requires-Dist: pyvista>=0.43; extra == "viz"
+Provides-Extra: dev
+Requires-Dist: pytest>=8.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.1; extra == "dev"
+Requires-Dist: hypothesis>=6.90; extra == "dev"
+Requires-Dist: ruff>=0.4; extra == "dev"
+Requires-Dist: mypy>=1.9; extra == "dev"
+
+# effects-sim
+
+Hazard and consequence modelling toolkit built on published open-literature models.
+Source models feed vulnerability models, with Monte Carlo uncertainty on top, rendered in 2D
+(3D and a 2D compressible solver come in later builds).
+
+**Status:** Build 1 (analytic engine) complete. Read `docs/DESIGN.md` for the validation status
+and known limitations before trusting any number. Fragility and casualty defaults are placeholders.
+
+## Setup (Windows 11, VS Code)
+
+```powershell
+py -3.11 -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -e ".[dev]"
+pytest
+```
+
+Then in VS Code: open the folder, pick the `.venv` interpreter, accept the recommended extensions.
+
+## Usage
+
+Quick radii calculator:
+
+```powershell
+effects calc --yield-kt 15
+effects calc --yield-kt 15 --plot outputs/curves.png
+```
+
+Full scenario (synthetic city, works offline):
+
+```powershell
+effects run scenarios/synthetic_city.yaml
+effects run scenarios/synthetic_city.yaml --samples 50   # quick look
+```
+
+Outputs land in `outputs/<name>/`: `summary.json`, `buildings.csv` (per-building state
+probabilities), `fields.npz` (grids for Build 2) and five PNGs.
+
+Real places: `pip install -e ".[geo]"`, download a WorldPop or GHSL population GeoTIFF into
+`cache/`, then edit `scenarios/real_area_template.yaml`. OSM buildings are fetched once and cached.
+
+## Making it quantitative
+
+1. Replace `src/effects/fragility/default_fragility.yaml` (or point `environment.fragility_library`
+   at your own file) with referenced values.
+2. Transcribe published range/overpressure points into
+   `tests/validation/data/reference_points.csv` and run `pytest -m validation`.
+
+## Layout
+
+```
+src/effects/
+  sources/      blast (Kinney-Graham + cube-root scaling), thermal
+  fragility/    building curves (YAML), casualty model
+  data/         grid, synthetic city, real-world loaders (cached in cache/)
+  montecarlo/   uncertainty engine
+  viz/          2D plots
+  scenario.py   YAML schema
+  cli.py        `effects calc` / `effects run`
+tests/
+  unit/         fast function-level tests
+  validation/   closed-form Monte Carlo checks, published-table harness
+scenarios/      YAML scenario files
+docs/           design notes
+```

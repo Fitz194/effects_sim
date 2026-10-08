@@ -1,0 +1,73 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "effects-sim"
+version = "0.2.0"
+description = "Hazard and consequence modelling: source models, fragility, Monte Carlo, 2D compressible solver, 3D rendering"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.26",
+    "scipy>=1.12",
+    "matplotlib>=3.8",
+    "pandas>=2.1",
+    "pydantic>=2.5",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+# Build 1 data layer: DEM, OSM buildings, gridded population
+geo = [
+    "rasterio>=1.3",
+    "geopandas>=0.14",
+    "shapely>=2.0",
+    "pyproj>=3.6",
+    "osmnx>=1.9",
+]
+# Build 3: compressible solver kernels
+solver = [
+    "numba>=0.59",
+]
+# Build 2: 3D rendering
+viz = [
+    "pyvista>=0.43",
+    "imageio>=2.31",         # GIF animation
+    "imageio-ffmpeg>=0.4",   # MP4 animation
+]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=4.1",
+    "hypothesis>=6.90",
+    "ruff>=0.4",
+    "mypy>=1.9",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"effects.fragility" = ["*.yaml"]
+
+[project.scripts]
+effects = "effects.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "validation: checks against published tables or analytic solutions",
+    "slow: long-running tests",
+]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "NPY"]
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
