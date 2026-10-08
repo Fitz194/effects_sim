@@ -77,6 +77,12 @@ def overpressure_vs_range(blast, thermal: ThermalSource, max_range_m: float, pat
     plt.close(fig)
 
 
+def _extent_km(grid) -> tuple[float, float, float, float]:
+    """Grid extent (xmin, xmax, ymin, ymax) converted from m to km for imshow."""
+    x0, x1, y0, y1 = (float(v) / 1e3 for v in grid.extent)
+    return (x0, x1, y0, y1)
+
+
 def population_map(res: Results, path):
     g = res.env.grid
     fig, ax = plt.subplots(figsize=(7, 6))
@@ -85,7 +91,7 @@ def population_map(res: Results, path):
     im = ax.imshow(
         dens,
         origin="lower",
-        extent=np.array(g.extent) / 1e3,
+        extent=_extent_km(g),
         cmap="Greys",
         norm=LogNorm(vmin=max(np.nanmin(dens), 1), vmax=np.nanmax(dens)),
     )
@@ -112,7 +118,7 @@ def fatality_map(res: Results, path):
         im = ax.imshow(
             d,
             origin="lower",
-            extent=np.array(g.extent) / 1e3,
+            extent=_extent_km(g),
             cmap="Reds",
             norm=LogNorm(vmin=max(vmax * 1e-4, 1e-3), vmax=vmax),
         )

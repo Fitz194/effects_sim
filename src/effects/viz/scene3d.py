@@ -309,7 +309,7 @@ class Scene:
         if self.bmesh.n_cells:
             arrived = self.t_bld[self.cell_bid] <= t
             self.bmesh.cell_data["display"] = np.where(arrived, self.dmg[self.cell_bid], -1.0)
-        if self.front_dome is not None:
+        if self.front_dome is not None and self.front_ring is not None:
             r = float(np.interp(t, self.t_tab, self.r_tab))
             self.front_dome.copy_from(dome(r, vertical_scale=0.6))
             self.front_ring.copy_from(ring(r, z=3.0))

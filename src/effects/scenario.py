@@ -137,6 +137,8 @@ def build_environment(sc: Scenario) -> tuple[Environment, dict]:
         from effects.data.geo import real_environment
 
         r = sc.environment.real
+        if r is None:
+            raise ValueError("environment.type is 'real' but the 'real' block is missing")
         env = real_environment(r.lat, r.lon, grid, names, mix, r.population_raster, r.osm_buildings)
     return env, lib
 

@@ -11,7 +11,10 @@ Sources and how far each was verified:
     The primary source has not been checked.
 """
 
+from importlib import resources
+
 import pytest
+import yaml
 
 from effects.fragility import load_fragility_library
 from effects.units import psi_to_pa
@@ -58,9 +61,6 @@ def test_heavy_construction_outlasts_houses(lib):
 
 def test_every_class_declares_its_basis(lib):
     """No class may pass as referenced without saying so. See default_fragility.yaml."""
-    import yaml
-    from importlib import resources
-
     raw = yaml.safe_load(
         resources.files("effects.fragility").joinpath("default_fragility.yaml").read_text()
     )
